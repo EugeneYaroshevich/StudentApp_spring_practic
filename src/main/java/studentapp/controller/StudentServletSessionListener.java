@@ -23,7 +23,8 @@ public class StudentServletSessionListener implements HttpSessionListener {
     public void sessionCreated(HttpSessionEvent sessionEvent) {
 
         try {
-            ApplicationContext context = new AnnotationConfigApplicationContext(StudentAppConfig.class);
+            AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+            context.register(StudentAppConfig.class);
 
             httpSession = sessionEvent.getSession();
 
