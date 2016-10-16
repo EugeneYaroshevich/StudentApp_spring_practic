@@ -1,7 +1,12 @@
 package studentapp.controller;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import studentapp.configuration.StudentAppConfig;
+import studentapp.dto.Mark;
+import studentapp.dto.Student;
+import studentapp.dto.Subject;
 import studentapp.exception.DaoException;
-import studentapp.mysql.DaoFactoryMySql;
 import studentapp.mysql.MarkDao;
 import studentapp.mysql.StudentDao;
 import studentapp.mysql.SubjectDao;
@@ -18,11 +23,18 @@ public class StudentServletSessionListener implements HttpSessionListener {
     public void sessionCreated(HttpSessionEvent sessionEvent) {
 
         try {
-            DaoFactoryMySql daoFactory = DaoFactoryMySql.getDAOFactory();
+            ApplicationContext context = new AnnotationConfigApplicationContext(StudentAppConfig.class);
+
             httpSession = sessionEvent.getSession();
-            httpSession.setAttribute("StudentDao", daoFactory.getStudentDao());
-            httpSession.setAttribute("SubjectDao", daoFactory.getSubjectDao());
-            httpSession.setAttribute("MarkDao", daoFactory.getMarkDao());
+
+            httpSession.setAttribute("StudentDao", context.getBean(StudentDao.class, "studentDao"));
+            httpSession.setAttribute("SubjectDao", context.getBean(SubjectDao.class, "subjectDao"));
+            httpSession.setAttribute("MarkDao", context.getBean(MarkDao.class, "markDao"));
+
+            httpSession.setAttribute("Student", context.getBean(Student.class, "student"));
+            httpSession.setAttribute("Subject", context.getBean(Subject.class, "subject"));
+            httpSession.setAttribute("Mark", context.getBean(Mark.class, "mark"));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +53,7 @@ public class StudentServletSessionListener implements HttpSessionListener {
             if (subjectDao != null) {
                 subjectDao.close();
             }
-            if (markDao != null){
+            if (markDao != null) {
                 markDao.close();
             }
         } catch (DaoException e) {

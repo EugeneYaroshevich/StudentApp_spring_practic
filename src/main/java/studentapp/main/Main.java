@@ -15,11 +15,11 @@ public class Main {
 
         try {
 
-            ApplicationContext ctx = new AnnotationConfigApplicationContext(StudentAppConfig.class);
+            ApplicationContext context = new AnnotationConfigApplicationContext(StudentAppConfig.class);
 
-            StudentDao studentDao = ctx.getBean(StudentDao.class, "studentDao");
-            SubjectDao subjectDao = ctx.getBean(SubjectDao.class, "subjectDao");
-            Student student = ctx.getBean(Student.class, "student");
+            StudentDao studentDao = context.getBean(StudentDao.class, "studentDao");
+            SubjectDao subjectDao = context.getBean(SubjectDao.class, "subjectDao");
+            Student student = context.getBean(Student.class, "student");
             student.setId(5);
 
             studentDao.readAllStudent();

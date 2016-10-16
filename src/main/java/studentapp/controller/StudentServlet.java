@@ -226,7 +226,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateStudent(name, surname).isEmpty()) {
 
-            Student student = new Student();
+            Student student = (Student) request.getSession().getAttribute("Student");
             student.setName(name);
             student.setSurname(surname);
 
@@ -248,7 +248,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateSubject(name).isEmpty()) {
 
-            Subject subject = new Subject();
+            Subject subject = (Subject) request.getSession().getAttribute("Subject");
             subject.setName(name);
 
             subjectDao.add(subject);
@@ -269,7 +269,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateMark(mark_student, studentId, subjectId).isEmpty()) {
 
-            Mark mark = new Mark();
+            Mark mark = (Mark) request.getSession().getAttribute("Mark");
             mark.setMark(Integer.parseInt(mark_student));
             mark.setStudentId(Integer.valueOf(studentId));
             mark.setSubjectId(Integer.valueOf(subjectId));
@@ -331,7 +331,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateStudent(name, surname).isEmpty()) {
 
-            Student student = new Student();
+            Student student = (Student) request.getSession().getAttribute("Student");
             student.setId(id);
             student.setName(name);
             student.setSurname(surname);
@@ -359,7 +359,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateSubject(name).isEmpty()) {
 
-            Subject subject = new Subject();
+            Subject subject = (Subject) request.getSession().getAttribute("Subject");
             subject.setId(id);
             subject.setName(name);
 
@@ -386,7 +386,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateMark(mark_student, studentId, subjectId).isEmpty()) {
 
-            Mark mark = new Mark();
+            Mark mark = (Mark) request.getSession().getAttribute("Mark");
             mark.setId(id);
             mark.setMark(Integer.parseInt(mark_student));
             mark.setStudentId(Integer.valueOf(studentId));
@@ -411,7 +411,7 @@ public class StudentServlet extends HttpServlet {
 
     public void deleteStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Student student = new Student();
+        Student student = (Student) request.getSession().getAttribute("Student");
         student.setId(Integer.valueOf(request.getParameter("id")));
 
         studentDao.delete(student);
@@ -421,7 +421,7 @@ public class StudentServlet extends HttpServlet {
 
     public void deleteSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Subject subject = new Subject();
+        Subject subject = (Subject) request.getSession().getAttribute("Subject");
         subject.setId(Integer.valueOf(request.getParameter("id")));
 
         subjectDao.delete(subject);
@@ -431,7 +431,7 @@ public class StudentServlet extends HttpServlet {
 
     public void deleteMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Mark mark = new Mark();
+        Mark mark = (Mark) request.getSession().getAttribute("Mark");
         mark.setId(Integer.valueOf(request.getParameter("id")));
 
         markDao.delete(mark);

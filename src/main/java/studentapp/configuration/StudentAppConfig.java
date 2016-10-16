@@ -18,23 +18,23 @@ import studentapp.mysql.SubjectDao;
 public class StudentAppConfig {
 
     @Bean
-    public DaoFactoryMySql mysql() throws DaoException {
+    public DaoFactoryMySql daoFactoryMySql() throws DaoException {
         return DaoFactory.getDAOFactory();
     }
 
     @Bean
     public StudentDao studentDao() throws DaoException {
-        return mysql().getStudentDao();
+        return daoFactoryMySql().getStudentDao();
     }
 
     @Bean
     public SubjectDao subjectDao() throws DaoException {
-        return mysql().getSubjectDao();
+        return daoFactoryMySql().getSubjectDao();
     }
 
     @Bean
     public MarkDao markDao() throws DaoException {
-        return mysql().getMarkDao();
+        return daoFactoryMySql().getMarkDao();
     }
 
     @Bean
