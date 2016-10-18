@@ -1,13 +1,13 @@
 package studentapp.configuration;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import studentapp.dao.DaoFactory;
 import studentapp.dto.Mark;
 import studentapp.dto.Student;
 import studentapp.dto.Subject;
 import studentapp.exception.DaoException;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import studentapp.mysql.DaoFactoryMySql;
 import studentapp.mysql.MarkDao;
 import studentapp.mysql.StudentDao;

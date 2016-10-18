@@ -1,7 +1,7 @@
 package studentapp.controller;
 
-import java.util.regex.*;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import studentapp.dto.Mark;
 import studentapp.dto.Student;
 import studentapp.dto.Subject;
@@ -14,17 +14,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 
 public class StudentServlet extends HttpServlet {
 
+    @Autowired
+    private StudentDao studentDao;
 
-    private final String STUDENT_DAO = "StudentDao";
-    private final String SUBJECT_DAO = "SubjectDao";
-    private final String MARK_DAO = "MarkDao";
+    @Autowired
+    private SubjectDao subjectDao;
+
+    @Autowired
+    private MarkDao markDao;
 
 
     private final String ADD_STUDENT = "/student.jsp";
@@ -52,36 +56,37 @@ public class StudentServlet extends HttpServlet {
 
 
     @Override
+    public void init() throws ServletException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext (this);
+    }
+
+
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 
         try {
             request.setCharacterEncoding("UTF-8");
             response.setContentType("text/html; charset=UTF-8");
-            HttpSession session = request.getSession();
-
-            StudentDao studentDao = (StudentDao) session.getAttribute(STUDENT_DAO);
-            SubjectDao subjectDao = (SubjectDao) session.getAttribute(SUBJECT_DAO);
-            MarkDao markDao = (MarkDao) session.getAttribute(MARK_DAO);
 
             String action = request.getParameter("action");
 
             switch (action) {
 
                 case "addStudent":
-                    addStudent(request, studentDao, response);
+                    addStudent(request, response);
                     break;
                 case "deleteStudent":
-                    deleteStudent(request, studentDao, response);
+                    deleteStudent(request, response);
                     break;
                 case "editStudent":
-                    editStudent(request, studentDao, response);
+                    editStudent(request, response);
                     break;
                 case "saveEditStudent":
-                    saveEditStudent(request, studentDao, response);
+                    saveEditStudent(request, response);
                     break;
                 case "listStudent":
-                    listStudent(request, studentDao, response);
+                    listStudent(request, response);
                     break;
                 case "student":
                     request.getRequestDispatcher(ADD_STUDENT).forward(request, response);
@@ -89,19 +94,19 @@ public class StudentServlet extends HttpServlet {
 
 
                 case "addSubject":
-                    addSubject(request, subjectDao, response);
+                    addSubject(request, response);
                     break;
                 case "deleteSubject":
-                    deleteSubject(request, subjectDao, response);
+                    deleteSubject(request, response);
                     break;
                 case "editSubject":
-                    editSubject(request, subjectDao, response);
+                    editSubject(request, response);
                     break;
                 case "saveEditSubject":
-                    saveEditSubject(request, subjectDao, response);
+                    saveEditSubject(request, response);
                     break;
                 case "listSubject":
-                    listSubject(request, subjectDao, response);
+                    listSubject(request, response);
                     break;
                 case "subject":
                     request.getRequestDispatcher(ADD_SUBJECT).forward(request, response);
@@ -109,19 +114,19 @@ public class StudentServlet extends HttpServlet {
 
 
                 case "addMark":
-                    addMark(request, markDao, response);
+                    addMark(request, response);
                     break;
                 case "deleteMark":
-                    deleteMark(request, markDao, response);
+                    deleteMark(request, response);
                     break;
                 case "editMark":
-                    editMark(request, markDao, response);
+                    editMark(request, response);
                     break;
                 case "saveEditMark":
-                    saveEditMark(request, markDao, response);
+                    saveEditMark(request, response);
                     break;
                 case "listMark":
-                    listMark(request, markDao, response);
+                    listMark(request, response);
                     break;
                 case "mark":
                     request.getRequestDispatcher(ADD_MARK).forward(request, response);
@@ -219,19 +224,19 @@ public class StudentServlet extends HttpServlet {
     }
 
 
-    public void addStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void addStudent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         String name = request.getParameter("name");
         String surname = request.getParameter("surname");
 
         if (validateStudent(name, surname).isEmpty()) {
 
-            Student student = (Student) request.getSession().getAttribute("Student");
+            Student student = new Student();
             student.setName(name);
             student.setSurname(surname);
 
             studentDao.add(student);
-            listStudent(request, studentDao, response);
+            listStudent(request, response);
 
         } else {
 
@@ -242,17 +247,17 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
-    public void addSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void addSubject(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         String name = request.getParameter("name");
 
         if (validateSubject(name).isEmpty()) {
 
-            Subject subject = (Subject) request.getSession().getAttribute("Subject");
+            Subject subject = new Subject();
             subject.setName(name);
 
             subjectDao.add(subject);
-            listSubject(request, subjectDao, response);
+            listSubject(request, response);
         } else {
 
             request.setAttribute("name", name);
@@ -261,7 +266,7 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
-    public void addMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void addMark(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         String mark_student = request.getParameter("mark");
         String studentId = request.getParameter("studentId");
@@ -269,13 +274,13 @@ public class StudentServlet extends HttpServlet {
 
         if (validateMark(mark_student, studentId, subjectId).isEmpty()) {
 
-            Mark mark = (Mark) request.getSession().getAttribute("Mark");
+            Mark mark = new Mark();
             mark.setMark(Integer.parseInt(mark_student));
             mark.setStudentId(Integer.valueOf(studentId));
             mark.setSubjectId(Integer.valueOf(subjectId));
 
             markDao.add(mark);
-            listMark(request, markDao, response);
+            listMark(request, response);
         } else {
 
             request.setAttribute("mark_student", mark_student);
@@ -287,7 +292,7 @@ public class StudentServlet extends HttpServlet {
     }
 
 
-    public void editStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void editStudent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Student student = studentDao.getById(Integer.parseInt(request.getParameter("id")));
 
@@ -299,7 +304,7 @@ public class StudentServlet extends HttpServlet {
 
     }
 
-    public void editSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void editSubject(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Subject subject = subjectDao.getById(Integer.parseInt(request.getParameter("id")));
 
@@ -310,7 +315,7 @@ public class StudentServlet extends HttpServlet {
 
     }
 
-    public void editMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void editMark(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Mark mark = markDao.getById(Integer.parseInt(request.getParameter("id")));
 
@@ -323,7 +328,7 @@ public class StudentServlet extends HttpServlet {
     }
 
 
-    public void saveEditStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void saveEditStudent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Integer id = Integer.valueOf(request.getParameter("id"));
         String name = request.getParameter("name");
@@ -331,7 +336,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateStudent(name, surname).isEmpty()) {
 
-            Student student = (Student) request.getSession().getAttribute("Student");
+            Student student = new Student();
             student.setId(id);
             student.setName(name);
             student.setSurname(surname);
@@ -340,7 +345,7 @@ public class StudentServlet extends HttpServlet {
 
             request.setAttribute("student", student);
 
-            listStudent(request, studentDao, response);
+            listStudent(request, response);
 
         } else {
 
@@ -352,14 +357,14 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
-    public void saveEditSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void saveEditSubject(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Integer id = Integer.valueOf(request.getParameter("id"));
         String name = request.getParameter("name");
 
         if (validateSubject(name).isEmpty()) {
 
-            Subject subject = (Subject) request.getSession().getAttribute("Subject");
+            Subject subject = new Subject();
             subject.setId(id);
             subject.setName(name);
 
@@ -367,7 +372,7 @@ public class StudentServlet extends HttpServlet {
 
             request.setAttribute("subject", subject);
 
-            listSubject(request, subjectDao, response);
+            listSubject(request, response);
         } else {
 
             request.setAttribute("id", id);
@@ -377,7 +382,7 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
-    public void saveEditMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void saveEditMark(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         Integer id = Integer.valueOf(request.getParameter("id"));
         String mark_student = request.getParameter("mark");
@@ -386,7 +391,7 @@ public class StudentServlet extends HttpServlet {
 
         if (validateMark(mark_student, studentId, subjectId).isEmpty()) {
 
-            Mark mark = (Mark) request.getSession().getAttribute("Mark");
+            Mark mark = new Mark();
             mark.setId(id);
             mark.setMark(Integer.parseInt(mark_student));
             mark.setStudentId(Integer.valueOf(studentId));
@@ -396,7 +401,7 @@ public class StudentServlet extends HttpServlet {
 
             request.setAttribute("markEntity", mark);
 
-            listMark(request, markDao, response);
+            listMark(request, response);
         } else {
 
             request.setAttribute("id", id);
@@ -409,52 +414,52 @@ public class StudentServlet extends HttpServlet {
     }
 
 
-    public void deleteStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void deleteStudent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Student student = (Student) request.getSession().getAttribute("Student");
+        Student student = new Student();
         student.setId(Integer.valueOf(request.getParameter("id")));
 
         studentDao.delete(student);
 
-        listStudent(request, studentDao, response);
+        listStudent(request, response);
     }
 
-    public void deleteSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void deleteSubject(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Subject subject = (Subject) request.getSession().getAttribute("Subject");
+        Subject subject = new Subject();
         subject.setId(Integer.valueOf(request.getParameter("id")));
 
         subjectDao.delete(subject);
 
-        listSubject(request, subjectDao, response);
+        listSubject(request, response);
     }
 
-    public void deleteMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void deleteMark(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
-        Mark mark = (Mark) request.getSession().getAttribute("Mark");
+        Mark mark = new Mark();
         mark.setId(Integer.valueOf(request.getParameter("id")));
 
         markDao.delete(mark);
 
-        listMark(request, markDao, response);
+        listMark(request, response);
     }
 
 
-    public void listStudent(HttpServletRequest request, StudentDao studentDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void listStudent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         request.setAttribute("students", studentDao.getAll());
 
         request.getRequestDispatcher(LIST_STUDENT).forward(request, response);
     }
 
-    public void listSubject(HttpServletRequest request, SubjectDao subjectDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void listSubject(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         request.setAttribute("subjects", subjectDao.getAll());
 
         request.getRequestDispatcher(LIST_SUBJECT).forward(request, response);
     }
 
-    public void listMark(HttpServletRequest request, MarkDao markDao, HttpServletResponse response) throws ServletException, IOException, DaoException {
+    public void listMark(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, DaoException {
 
         request.setAttribute("marks", markDao.getAll());
 

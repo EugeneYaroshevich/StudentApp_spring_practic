@@ -3,6 +3,7 @@ package studentapp.main;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import studentapp.configuration.StudentAppConfig;
 import studentapp.dto.Student;
 import studentapp.exception.DaoException;
@@ -13,24 +14,26 @@ public class Main {
 
     public static void main(String[] args) {
 
-        try {
-
-            ApplicationContext context = new AnnotationConfigApplicationContext(StudentAppConfig.class);
-
-            StudentDao studentDao = context.getBean(StudentDao.class, "studentDao");
-            SubjectDao subjectDao = context.getBean(SubjectDao.class, "subjectDao");
-            Student student = context.getBean(Student.class, "student");
-            student.setId(5);
-
-            studentDao.readAllStudent();
-
-            System.out.println(subjectDao.getAllSubjectOfStudent(student));
-
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
-
-
+//        try {
+//
+//            AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+//            context.register(StudentAppConfig.class);
+//            context.refresh();
+//
+//            StudentDao studentDao = context.getBean(StudentDao.class, "studentDao");
+//            SubjectDao subjectDao = context.getBean(SubjectDao.class, "subjectDao");
+//            Student student = context.getBean(Student.class, "student");
+//            student.setId(5);
+//
+//            studentDao.readAllStudent();
+//
+//            System.out.println(subjectDao.getAllSubjectOfStudent(student));
+//
+//        } catch (DaoException e) {
+//            e.printStackTrace();
+//        }
+//
+//
 //        try {
 //
 //            ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{"config.xml"});
